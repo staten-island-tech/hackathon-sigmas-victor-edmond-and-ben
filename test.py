@@ -20,7 +20,7 @@ BLUE = (0, 0, 255)
 # Define note settings
 NOTE_WIDTH = 100
 NOTE_HEIGHT = 150
-NOTE_SPEED = 5
+NOTE_SPEED = 1  # Default speed
 KEYS = ['z', 'x', 'c', 'b', 'n', 'm']  # 6 keys
 KEYS_POS = [0, 100, 200, 300, 400, 500]  # Positions for 'Z', 'X', 'C', 'B', 'N', 'M'
 
@@ -31,7 +31,8 @@ font = pygame.font.SysFont("Arial", 24)
 score = 0
 lives = 3  # Player starts with 3 lives
 falling_notes = []
-note_spawn_time = 0.4
+note_spawn_time = 0.4  # Default spawn time
+num_notes = 5  # Default number of notes
 
 # Clock
 clock = pygame.time.Clock()
@@ -100,9 +101,61 @@ def game_over():
     game_over_text = font.render("Game Over! Press R to Restart", True, WHITE)
     screen.blit(game_over_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2))
 
+def ask_for_input():
+    """Ask user for input values: speed, note spawn time, and number of notes."""
+    global NOTE_SPEED, note_spawn_time, num_notes
+
+    # Ask for the speed
+    speed_prompt = font.render("Enter speed (1-5):", True, WHITE)
+    screen.blit(speed_prompt, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
+    pygame.display.update()
+    speed_input = get_user_input()
+    NOTE_SPEED = int(speed_input) if speed_input.isdigit() else 1
+
+    # Ask for the note spawn time
+    spawn_time_prompt = font.render("Enter note spawn time (0.1 - 1):", True, WHITE)
+    screen.blit(spawn_time_prompt, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2))
+    pygame.display.update()
+    spawn_input = get_user_input()
+    note_spawn_time = float(spawn_input) if spawn_input.replace('.', '', 1).isdigit() else 0.4
+
+    # Ask for the number of notes
+    num_notes_prompt = font.render("Enter number of notes (5-20):", True, WHITE)
+    screen.blit(num_notes_prompt, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 1.5))
+    pygame.display.update()
+    notes_input = get_user_input()
+    num_notes = int(notes_input) if notes_input.isdigit() else 5
+
+def get_user_input():
+    """Function to get user input in pygame."""
+    input_text = ''
+    font = pygame.font.SysFont("Arial", 24)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:  # User presses Enter to submit
+                    return input_text
+                elif event.key == pygame.K_BACKSPACE:  # User presses backspace to remove a character
+                    input_text = input_text[:-1]
+                else:
+                    input_text += event.unicode  # Append the character
+        # Display the input text
+        screen.fill(BLACK)
+        question = font.render("Enter a value:", True, WHITE)
+        screen.blit(question, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
+        input_display = font.render(input_text, True, WHITE)
+        screen.blit(input_display, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2))
+        pygame.display.update()
+
 def main():
-    global score, falling_notes, lives, note_spawn_time
+    global score, falling_notes, lives, note_spawn_time, NOTE_SPEED, num_notes
     last_spawn_time = time.time()
+
+    # Get user input before starting the game
+    ask_for_input()
 
     while True:
         screen.fill(BLACK)
@@ -119,8 +172,10 @@ def main():
                     lives = 3
                     falling_notes = []
 
+        # Spawn notes based on user-defined spawn time and number of notes
         if time.time() - last_spawn_time > note_spawn_time:
-            spawn_note()
+            if len(falling_notes) < num_notes:  # Limit the number of notes
+                spawn_note()
             last_spawn_time = time.time()
 
         update_notes()
