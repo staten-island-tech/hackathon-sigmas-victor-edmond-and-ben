@@ -35,7 +35,7 @@ falling_notes = []
 note_spawn_time = 0.5  # Default spawn time
 num_notes = 5  # Default number of notes
 hit_sound = pygame.mixer.Sound("ding.mp3")
-
+miss_sound = pygame.mixer.Sound("womp.mp3")
 # Clock
 clock = pygame.time.Clock()
 
@@ -188,6 +188,7 @@ def main():
         for note in falling_notes[:]:
             if note['y'] > SCREEN_HEIGHT:
                 lives -= 1  # Player loses a life if the note reaches the bottom
+                miss_sound.play()
                 falling_notes.remove(note)  # Remove the note after it reaches the bottom
                 if lives <= 0:
                     game_over()
