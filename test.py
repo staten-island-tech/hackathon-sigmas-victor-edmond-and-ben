@@ -38,12 +38,18 @@ note_spawn_time = 0.4  # Default spawn time
 num_notes = 5  # Default number of notes
 
 # Load sounds
-hit_sound = pygame.mixer.Sound("hit_sound.wav")  # Sound for when the player hits a note
-miss_sound = pygame.mixer.Sound("miss_sound.wav")  # Sound for when a note is missed
+hit_sound = pygame.mixer.Sound("ding.mp3")  # Sound for when the player hits a note
+
+
+
+
+#miss_sound = pygame.mixer.Sound("miss_sound.wav")  # Sound for when a note is missed
 
 # Set volume for the sounds (0.0 to 1.0)
 hit_sound.set_volume(0.5)  # Set the hit sound volume to 50%
-miss_sound.set_volume(0.5)  # Set the miss sound volume to 50%
+
+
+#miss_sound.set_volume(0.5)  # Set the miss sound volume to 50%
 
 # Clock
 clock = pygame.time.Clock()
@@ -193,7 +199,9 @@ def main():
         for note in falling_notes[:]:
             if note['y'] > SCREEN_HEIGHT:
                 lives -= 1  # Player loses a life if the note reaches the bottom
-                miss_sound.play()  # Play miss sound when note reaches bottom
+
+                #miss_sound.play()  # Play miss sound when note reaches bottom
+
                 falling_notes.remove(note)  # Remove the note after it reaches the bottom
                 if lives <= 0:
                     game_over()

@@ -21,6 +21,7 @@ color3 = (random.randint(10,255), random.randint(10,255), random.randint(10,255)
 NOTE_WIDTH = 100
 NOTE_HEIGHT = 150
 NOTE_SPEED = 4  # Default speed
+NOTE_SPEED2=5
 KEYS = ['z', 'x', 'c', 'b', 'n', 'm']  # 6 keys
 KEYS_POS = [0, 100, 200, 300, 400, 500]  # Positions for 'Z', 'X', 'C', 'B', 'N', 'M'
 
@@ -33,6 +34,7 @@ lives = 3  # Player starts with 3 lives
 falling_notes = []
 note_spawn_time = 0.5  # Default spawn time
 num_notes = 5  # Default number of notes
+hit_sound = pygame.mixer.Sound("ding.mp3")
 
 # Clock
 clock = pygame.time.Clock()
@@ -64,21 +66,27 @@ def check_input():
         if note['y'] > LINE_Y:
             if keys[pygame.K_z] and note['key'] == 'z':
                 score += 1
+                hit_sound.play()
                 falling_notes.remove(note)  # Remove the note after it is hit
             elif keys[pygame.K_x] and note['key'] == 'x':
                 score += 1
+                hit_sound.play()
                 falling_notes.remove(note)
             elif keys[pygame.K_c] and note['key'] == 'c':
                 score += 1
+                hit_sound.play()
                 falling_notes.remove(note)
             elif keys[pygame.K_b] and note['key'] == 'b':
                 score += 1
+                hit_sound.play()
                 falling_notes.remove(note)
             elif keys[pygame.K_n] and note['key'] == 'n':
                 score += 1
+                hit_sound.play()
                 falling_notes.remove(note)
             elif keys[pygame.K_m] and note['key'] == 'm':
                 score += 1
+                hit_sound.play()
                 falling_notes.remove(note)
 
 def update_notes():
@@ -173,7 +181,7 @@ def main():
         draw_lives()
         draw_line()
         if score>=100:
-            NOTE_SPEED+=1
+            NOTE_SPEED=NOTE_SPEED2
         if lives==0:
             NOTE_SPEED=4
 
