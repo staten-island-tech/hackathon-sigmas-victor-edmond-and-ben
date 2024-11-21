@@ -6,6 +6,9 @@ import time
 # Initialize Pygame
 pygame.init()
 
+# Initialize the Pygame mixer for sound
+pygame.mixer.init()
+
 # Screen dimensions
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 1000
@@ -20,7 +23,7 @@ BLUE = (0, 0, 255)
 # Define note settings
 NOTE_WIDTH = 100
 NOTE_HEIGHT = 150
-NOTE_SPEED = 1  # Default speed
+NOTE_SPEED = 4  # Default speed
 KEYS = ['z', 'x', 'c', 'b', 'n', 'm']  # 6 keys
 KEYS_POS = [0, 100, 200, 300, 400, 500]  # Positions for 'Z', 'X', 'C', 'B', 'N', 'M'
 
@@ -33,6 +36,14 @@ lives = 3  # Player starts with 3 lives
 falling_notes = []
 note_spawn_time = 0.4  # Default spawn time
 num_notes = 5  # Default number of notes
+
+# Load sounds
+hit_sound = pygame.mixer.Sound("hit_sound.wav")  # Sound for when the player hits a note
+miss_sound = pygame.mixer.Sound("miss_sound.wav")  # Sound for when a note is missed
+
+# Set volume for the sounds (0.0 to 1.0)
+hit_sound.set_volume(0.5)  # Set the hit sound volume to 50%
+miss_sound.set_volume(0.5)  # Set the miss sound volume to 50%
 
 # Clock
 clock = pygame.time.Clock()
@@ -64,21 +75,27 @@ def check_input():
         if note['y'] > LINE_Y:
             if keys[pygame.K_z] and note['key'] == 'z':
                 score += 1
+                hit_sound.play()  # Play hit sound
                 falling_notes.remove(note)  # Remove the note after it is hit
             elif keys[pygame.K_x] and note['key'] == 'x':
                 score += 1
+                hit_sound.play()
                 falling_notes.remove(note)
             elif keys[pygame.K_c] and note['key'] == 'c':
                 score += 1
+                hit_sound.play()
                 falling_notes.remove(note)
             elif keys[pygame.K_b] and note['key'] == 'b':
                 score += 1
+                hit_sound.play()
                 falling_notes.remove(note)
             elif keys[pygame.K_n] and note['key'] == 'n':
                 score += 1
+                hit_sound.play()
                 falling_notes.remove(note)
             elif keys[pygame.K_m] and note['key'] == 'm':
                 score += 1
+                hit_sound.play()
                 falling_notes.remove(note)
 
 def update_notes():
@@ -102,29 +119,16 @@ def game_over():
     screen.blit(game_over_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2))
 
 def ask_for_input():
-    """Ask user for input values: speed, note spawn time, and number of notes."""
-    global NOTE_SPEED, note_spawn_time, num_notes
+    """Ask user for input values: number of notes."""
+    global num_notes
 
-    # Ask for the speed
-    speed_prompt = font.render("Enter speed (1-5):", True, WHITE)
-    screen.blit(speed_prompt, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
+    # Prompt text
+    prompt_text = font.render("Enter number of notes (5-20):", True, WHITE)
+    screen.blit(prompt_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
     pygame.display.update()
-    speed_input = get_user_input()
-    NOTE_SPEED = int(speed_input) if speed_input.isdigit() else 1
 
-    # Ask for the note spawn time
-    spawn_time_prompt = font.render("Enter note spawn time (0.1 - 1):", True, WHITE)
-    screen.blit(spawn_time_prompt, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2))
-    pygame.display.update()
-    spawn_input = get_user_input()
-    note_spawn_time = float(spawn_input) if spawn_input.replace('.', '', 1).isdigit() else 0.4
-
-    # Ask for the number of notes
-    num_notes_prompt = font.render("Enter number of notes (5-20):", True, WHITE)
-    screen.blit(num_notes_prompt, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 1.5))
-    pygame.display.update()
-    notes_input = get_user_input()
-    num_notes = int(notes_input) if notes_input.isdigit() else 5
+    num_notes_input = get_user_input()
+    num_notes = int(num_notes_input) if num_notes_input.isdigit() else 5
 
 def get_user_input():
     """Function to get user input in pygame."""
@@ -144,8 +148,8 @@ def get_user_input():
                     input_text += event.unicode  # Append the character
         # Display the input text
         screen.fill(BLACK)
-        question = font.render("Enter a value:", True, WHITE)
-        screen.blit(question, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
+        prompt_text = font.render("Enter number of notes (5-20):", True, WHITE)
+        screen.blit(prompt_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
         input_display = font.render(input_text, True, WHITE)
         screen.blit(input_display, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2))
         pygame.display.update()
@@ -189,6 +193,7 @@ def main():
         for note in falling_notes[:]:
             if note['y'] > SCREEN_HEIGHT:
                 lives -= 1  # Player loses a life if the note reaches the bottom
+                miss_sound.play()  # Play miss sound when note reaches bottom
                 falling_notes.remove(note)  # Remove the note after it reaches the bottom
                 if lives <= 0:
                     game_over()

@@ -13,14 +13,14 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("4-Key Rhythm Game")
 
 # Colors
-BLACK = (0, 0, 0)
+color1 = (random.randint(10,255), random.randint(10,255), random.randint(10,255))
 WHITE = (255, 255, 255)
-BLUE = (0, 0, 255)
+color3 = (random.randint(10,255), random.randint(10,255), random.randint(10,255))
 
 # Define note settings
 NOTE_WIDTH = 100
 NOTE_HEIGHT = 150
-NOTE_SPEED = 5
+NOTE_SPEED = 4  # Default speed
 KEYS = ['z', 'x', 'c', 'b', 'n', 'm']  # 6 keys
 KEYS_POS = [0, 100, 200, 300, 400, 500]  # Positions for 'Z', 'X', 'C', 'B', 'N', 'M'
 
@@ -31,7 +31,8 @@ font = pygame.font.SysFont("Arial", 24)
 score = 0
 lives = 3  # Player starts with 3 lives
 falling_notes = []
-note_spawn_time = 0.4
+note_spawn_time = 0.5  # Default spawn time
+num_notes = 5  # Default number of notes
 
 # Clock
 clock = pygame.time.Clock()
@@ -43,7 +44,7 @@ def spawn_note():
     """Function to spawn a note at a random position."""
     key = random.choice(KEYS)
     x_pos = KEYS_POS[KEYS.index(key)]
-    note = {'key': key, 'x': x_pos, 'y': 0, 'color': BLUE}
+    note = {'key': key, 'x': x_pos, 'y': 0, 'color': color3}
     falling_notes.append(note)
 
 def draw_notes():
@@ -100,12 +101,51 @@ def game_over():
     game_over_text = font.render("Game Over! Press R to Restart", True, WHITE)
     screen.blit(game_over_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2))
 
+def ask_for_input():
+    """Ask user for input values: number of notes."""
+    global num_notes
+
+    # Prompt text
+    prompt_text = font.render("Enter number of notes (5-20):", True, WHITE)
+    screen.blit(prompt_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
+    pygame.display.update()
+
+    num_notes_input = get_user_input()
+    num_notes = int(num_notes_input) if num_notes_input.isdigit() else 5
+
+def get_user_input():
+    """Function to get user input in pygame."""
+    input_text = ''
+    font = pygame.font.SysFont("Arial", 24)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:  # User presses Enter to submit
+                    return input_text
+                elif event.key == pygame.K_BACKSPACE:  # User presses backspace to remove a character
+                    input_text = input_text[:-1]
+                else:
+                    input_text += event.unicode  # Append the character
+        # Display the input text
+        screen.fill(color1)
+        prompt_text = font.render("Enter number of notes:", True, WHITE)
+        screen.blit(prompt_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
+        input_display = font.render(input_text, True, WHITE)
+        screen.blit(input_display, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2))
+        pygame.display.update()
+
 def main():
-    global score, falling_notes, lives, note_spawn_time
+    global score, falling_notes, lives, note_spawn_time, NOTE_SPEED, num_notes
     last_spawn_time = time.time()
 
+    # Get user input before starting the game
+    ask_for_input()
+
     while True:
-        screen.fill(BLACK)
+        screen.fill(color1)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -119,8 +159,10 @@ def main():
                     lives = 3
                     falling_notes = []
 
+        # Spawn notes based on user-defined spawn time and number of notes
         if time.time() - last_spawn_time > note_spawn_time:
-            spawn_note()
+            if len(falling_notes) < num_notes:  # Limit the number of notes
+                spawn_note()
             last_spawn_time = time.time()
 
         update_notes()
@@ -130,6 +172,10 @@ def main():
         draw_score()
         draw_lives()
         draw_line()
+        if score>=100:
+            NOTE_SPEED+=1
+        if lives==0:
+            NOTE_SPEED=4
 
         for note in falling_notes[:]:
             if note['y'] > SCREEN_HEIGHT:
