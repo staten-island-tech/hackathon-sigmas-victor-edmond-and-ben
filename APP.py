@@ -208,8 +208,8 @@ def get_user_input():
                     input_text += event.unicode  # Append the character
         # Display the input text
         screen.fill(color1)
-        prompt_text = font.render("Enter number of notes:", True, WHITE)
-        screen.blit(prompt_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
+        prompt_text = font.render("Enter number of notes: WARNING LOWER VOLUME", True, WHITE)
+        screen.blit(prompt_text, (SCREEN_WIDTH // 5, SCREEN_HEIGHT // 3))
         input_display = font.render(input_text, True, WHITE)
         screen.blit(input_display, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 2))
         pygame.display.update()
@@ -330,6 +330,7 @@ def main():
                 miss_sound.play()
                 falling_notes.remove(note)  # Remove the note after it reaches the bottom
                 if lives <= 0:
+                    clock.tick(60)
                     game_over_sound.play()
                     game_over()
                     pygame.display.update()
