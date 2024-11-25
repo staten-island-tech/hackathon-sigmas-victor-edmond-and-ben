@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\edmond.zhao24\Documents\GitHub\hackathon-sigmas-victor-edmond-and-ben\venv"
+VIRTUAL_ENV="C:\Users\victor.khobot24\Documents\GitHub\hackathon-sigmas-victor-edmond-and-ben\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
