@@ -327,7 +327,9 @@ def main():
                 miss_sound.play()
                 falling_notes.remove(note)  # Remove the note after it reaches the bottom
                 if lives <= 0:
+                    clock.tick(100)
                     game_over_sound.play()
+                    clock.tick(60)
                     game_over()
                     pygame.display.update()
                     time.sleep(2)
